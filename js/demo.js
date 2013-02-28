@@ -14,13 +14,6 @@
         
         return hrs + ":" + min + ":" + sec;
       },
-      interval = setInterval(function () {
-        var diff = (new Date()) - lastActivity,
-            timeTillWarning = sg.getTimeTillWarning() - diff,
-            timeTillLogout = sg.getTimeTillLogout() - diff;
-        $(warningDiv).text(msToString((timeTillWarning > 0) ? timeTillWarning : 0));
-        $(logoutDiv).text(msToString((timeTillLogout > 0) ? timeTillLogout : 0));
-      }, 400),
       styleTimeBox = function (selector, addClass) {
         $(selector)[(addClass) ? "addClass" : "removeClass"](timedOutClass);
       },
@@ -36,10 +29,18 @@
         styleTimeBox(logoutDiv, false);
       };
       
-  var sg = sessionGuard({
-    timeLogout: 20,
-    timeWarning: 10,
-    onWarning: onWarning,
-    onLogout: onLogout
-  });
+  var sg = sessionGuard.start({
+      timeLogout: 20,
+      timeWarning: 10,
+      onWarning: onWarning,
+      onLogout: onLogout
+    }),
+    interval = setInterval(function () {
+      var diff = (new Date()) - lastActivity,
+          timeTillWarning = sg.getTimeTillWarning() - diff,
+          timeTillLogout = sg.getTimeTillLogout() - diff;
+      $(warningDiv).text(msToString((timeTillWarning > 0) ? timeTillWarning : 0));
+      $(logoutDiv).text(msToString((timeTillLogout > 0) ? timeTillLogout : 0));
+    }, 400);
+
 })(window.sessionGuard = window.sessionGuard || {}, jQuery);
